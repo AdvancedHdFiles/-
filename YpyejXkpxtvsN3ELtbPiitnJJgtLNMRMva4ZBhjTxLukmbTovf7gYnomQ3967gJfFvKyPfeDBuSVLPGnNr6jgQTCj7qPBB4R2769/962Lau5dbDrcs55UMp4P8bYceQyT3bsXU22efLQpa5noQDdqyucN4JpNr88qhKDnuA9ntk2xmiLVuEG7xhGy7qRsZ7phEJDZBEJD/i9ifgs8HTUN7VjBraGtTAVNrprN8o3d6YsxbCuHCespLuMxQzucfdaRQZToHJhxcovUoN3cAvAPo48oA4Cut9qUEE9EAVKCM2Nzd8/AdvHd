@@ -1,0 +1,199 @@
+local sort_by_age = make_sorter [[a.age < b.age]]
+local sort_by_name = make_sorter [[a.name < b.name]]
+-- This is inefficient, but simple. See below for an improvement.
+local sort_by_number_of_children = make_sorter [[#(a.children or {}) < #(b.children or {})]]
+
+-- ... much later ...
+
+function show_offspring(grandmom)
+  -- Arrange the families so the smallest ones come first
+  sort_by_number_of_children(grandmom.children)
+  -- In each family, sort the grandkids, if any, by age 
+  for _, child in pairs(grandmom.children) do
+     if child.children then sort_by_age(child.children) end
+  end
+end
+
+function show_offspring(grandmom)
+  -- Arrange the families so the largest ones come first
+  make_sorter[[#(a.children or {}) > #(b.children or {})]](grandmom.children)
+  -- In each family, sort the grandkids, if any, by age 
+  for _, child in pairs(grandmom.children) do
+     if child.children then make_sorter[[a.age < b.age]](child.children) end
+  end
+end
+
+function show_offspring(grandmom)
+  -- Arrange the families so the largest ones come first
+  Shellsorter[ "#(a.children or {}) > #(b.children or {})" ](grandmom.children)
+  -- In each family, sort the grandkids, if any, by age 
+  for _, child in pairs(grandmom.children) do
+     if child.children then Shellsorter[ "a.age < b.age" ](child.children) end
+  end
+end
+
+function distance(x, y) return ((x[1]-y[1])^2 + (x[2]-y[2])^2 + (x[3]-y[3])^2)^0.5 end
+Shellsorter[" distance(a, ref) < distance(b, ref) "](array)
+
+T = {k&#x2081;&#x2192;v&#x2081;, k&#x2082;&#x2192;v&#x2082;, &#x2026; kn&#x2192;vn}
+
+K = {1&#x2192;k&#x2081;,2&#x2192;k&#x2082;, &#x2026; n&#x2192;kn;} .
+
+function pairs_in_order(T, K)
+  local i = 0
+  return function iter()
+    i = i + 1
+    local k = K[i]
+    if k then return k, T[k] end
+  end
+end
+
+-- K = keytable(T)
+K = {}; for k in pairs(T) do K[#K+1] = k end
+-- C = map(f, T)
+C = {}; for k, v in pairs(T) do C[k] = f(k, v) end
+-- Sort
+Shellsorter["C[a] < C[b]"](K)
+-- Get rid of C (see below)
+C = nil
+-- Iterate the sorted key, value pairs
+for k, v in pairs_in_order(T, K) do
+  print(k, v)
+end
+
+Shellsorter["C[a] < C[b] or C[a] == C[b] and a < b"](K)
+
+local u = 0 -- don't delete
+
+local function random(x, y)
+    u = u + 1
+    if x ~= nil and y ~= nil then
+        return math.floor(x +(math.random(math.randomseed(os.time()+u))*999999 %y))
+    else
+        return math.floor((math.random(math.randomseed(os.time()+u))*100))
+    end
+end
+
+function RandomVariable(length)
+	local res = ""
+	for i = 1, length do
+		res = res .. string.char(math.random(97, 122))
+	end
+	return res
+end
+
+
+
+ScriptName = "AdvancedScript"
+
+
+
+AdvancedScript = {}
+
+function AdvancedScript:Name()
+    return self:Localize('UILabel')
+end
+
+function AdvancedScript:Version()
+    return '1.0'
+end
+
+function AdvancedScript:UILabel()
+    return self:Localize('UILabel')
+end
+
+function AdvancedScript:Creator()
+    return 'ImSnox'
+end
+
+function AdvancedScript:Description()
+    return self:Localize('Description')
+end
+
+function AdvancedScript:ColorizeIcon()
+    return true
+end
+
+
+function AdvancedScript:IsRelevant(moho)
+    return true
+end
+
+function AdvancedScript:IsEnabled(moho)
+    return true
+end
+
+
+
+function AdvancedScript:OnMouseDown(moho, mouseEvent)
+    
+end
+
+function AdvancedScript:OnMouseMoved(moho, mouseEvent)
+    
+end
+
+function AdvancedScript:OnMouseUp(moho, mouseEvent)
+    
+end
+
+function AdvancedScript:OnKeyDown(moho, keyEvent)
+    
+end
+
+function AdvancedScript:OnKeyUp(moho, keyEvent)
+    
+end
+
+
+function AdvancedScript:Localize(text)
+    local phrase = {}
+
+    phrase['Description'] = 'V3'
+    phrase['UILabel'] = 'AdvancedHdAdmin'
+
+
+    local fileWord = MOHO.Localize("/Menus/File/File=File")
+    if fileWord == "Файл" then
+        phrase['Description'] = 'V3'
+        phrase['UILabel'] = 'AdvancedHdAdmin'
+
+    end
+
+    return phrase[text]
+end
+
+function testcase:new()
+        local new_inst = {}
+        setmetatable( new_inst, testcase)
+ 
+        -- machine states
+        new_inst.states = {
+                S1="S1",
+                S11="S11",
+                S12="S12",
+                S3="S3",
+                __UNKNOWN_STATE__="__UNKNOWN_STATE__"
+        }
+ 
+        -- machine events
+        new_inst.events = {
+                evB="evB",
+                evA="evA",
+                TESTCASE_NO_MSG="TESTCASE_NO_MSG"
+        }
+ 
+        -- Set state vars to default states
+        new_inst.stateVar = new_inst.states.S1
+        new_inst.stateVarS1 = new_inst.states.S11 -- set init state of S1 
+ 
+        new_inst.init=false
+        return new_inst
+end
+ 
+function testcase:processEvent(Event)
+...
+return evConsumed;
+end
+ 
+return testcase
